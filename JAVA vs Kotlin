@@ -1,0 +1,183 @@
+앱 개발 리포트
+(코틀린과 자바 문법의 차이점)
+
+정보 통신 공학과 
+2015261006 서형일
+
+1. 상속 지정 및 선언
+
+//java
+pubic class Mainactivity extends AppCompatActivity { ... }
+
+//kotlin
+class MainactivityKt : AppCompatActivity, OnclickListener { ... }
+
+자바에서는 상속의 개념을 A extends B를 통해 표현
+
+코틀린에서는 상속의 개념을 extends 대신 콜론( : )으로 표현하며
+인터페이스 추가는 콤마( , )로 추가
+
+2. 함수 선언
+
+//java
+fun getSum(a: Int, b: Int): Int { return a*b; }
+
+//kotlin
+fun getSum(a: Int, b: Int) = a*b
+
+자바에서와는 다르게 코틀린에서는 축약할 수 있고, 자료형이 변수명 뒤에 위치함
+
+3. findViewById (레이아웃에 설정된 뷰들을 가져오는 메소드)
+
+//java 
+private Toolbar toolbar;
+@Override
+protected void OnCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState_;
+    setContentView(R.layout.activity_main);
+    
+    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+ }
+
+//kotlin
+private val toolbar by lazy {
+    findViewById(R.id.toolbar)
+ }
+코틀린에서는 lazy처럼 키워드를 통해서 findViewById를 수행함
+lazy는 OnCreate가 완료된 후 findViewById 하므로 null이 나오지 않음
+
+4. onCreate문 (레이아웃을 생성하고 초기화 컴포넌트를 불러오는 메소드)
+
+//java 
+@Override
+protected void onCreate(@Nullable Bundle savedInstanceState) { ~ }
+
+//kotlin
+override fun onCreate(SavedInstanceSate: Bundle? ) { ~ }
+
+자바에서는 null이 허용되어 null 처리에 대한 부분이 따로 존재하지 않음
+코틀린에서는 물음표( ? )가 있으면 이 변수는 무조건 null이 될 수 있음
+
+5. lambda 식
+
+//java
+fab.setOnClickListener ( new View.OnClickListener () { 
+    @Override
+    public void onClick(View view) {
+        ...
+    }
+});
+
+//kotlin
+fab.setOnClickListener {
+    view ->
+    ...
+}
+fab.setOnClickListener {
+    ...     
+}
+
+자바에서는 문장의 끝에 세미콜론( ; )이 붙고
+코틀린에서는 세미콜론( ; )이 붙지 않고 엔터로 대신하고
+OnClickListener 혹은 OnClick(View view) 등 생략이 가능
+
+6. 콜백 함수
+
+//java
+public interface Callback {
+  void onSuccess(ResultType result);
+  void onError (Exception exception);
+}
+​
+public void networdCall (Callback callback) {
+  try{
+    // 내용
+    callback.onSuccess(myResult);
+  }catch (e: Throwable) {
+    callback.onError(e);
+  }
+}
+​
+//Usage:
+networkCall(new Callback() {
+  public void onSuccess(ResultType result) {
+  // call 성공 시 동작
+
+  }
+  public void onError(Exception e){
+  // call 실패 시 동작    
+  }
+})
+
+//kotlin
+fun networkCall(onSuccess: (ResultType) -> Unit, onError: (Throwable) -> Unit){
+  try {
+    // 내용
+    onSuccess(myResult)
+  } catch(e: Throwable) {
+    onError(e)
+  }
+}
+​
+//Usage:
+networkCall(result -> { 
+  // call 성공 시 동작
+}, error -> {
+  // call 실패 시 동작
+});
+
+자바의 경우 interface를 상속받아 구현을 일일이 수행해야 하고
+
+코틀린에서는 함수를 변수에 저장/다른 함수 안에서 함수를 생성할 수 있어 생성해 놓고 다음에 사용할 수 있고, 하나의 함수 안에서 만들 수 있다.
+
+7. DATA CLASS 파트
+
+data class User(var name: String, var age: Int)
+
+자바에서는 GET/SET 메소드 등을 일일이 구현해야 하지만,
+코틀린에서는 data class로 만들면 한 줄로 컴파일러가 GET/SET 및 toString, copy 함수를 알아서 생성한다.
+8. Type aliases (별칭) 기능
+
+typealias MapOfLists = Map<String, List>
+​
+fun useMap(map: MapOfList) {
+  //...
+}
+
+자바에는 없는 기능으로
+코트린에서는 자바와 다르게 이름이 어려운 자료형에 마음대로 별명을 붙여 사용할 수 있다.
+
+9. 분해 선언
+
+//java
+class Person{
+	public int getAge(){...}
+	public String getName(){...}
+}
+
+Person = new Person()      //사람을 표현하는 객체
+
+//사람 객체에 포함된 필드를 각각 사용하려면 이를 수동을 각 변수에 할당해야 함
+int ageOfPerson = person.getAge();
+String nameOfPerson = person.getName();
+
+//kotlin
+data class Person(val age: Int, val name: String)
+val person : Person = ...   //사람을 표현하는 객체
+
+//사람 객체에 포함된 필드의 값을 한번에 여러 값(val)에 해당한다.
+val (ageOfPerson, nameOfPerson)= person
+
+자료구조 내에 필드 중 일부만 사용하거나 각 항목을 별도의 변수로 뽑아 사용하는 경우,
+자바는 이런 경우에 사용할 수 있는 문법이 없어, 수동으로 변수를 할당해서 사용해야 하고,
+코틀린에서는 각 프로퍼티가 가진 자료의 값을 한 번에 여러 개의 값 (val) 혹은 변수에 할당할 수 있다.
+
+10. 인라인 함수
+
+//kotlin
+inline fun doSomething(body: () -> Unit){
+	println(“onPreExecute()”)
+	body()
+	println(“onPostExecute()”)
+}
+lamda 식과 인라인 함수를 사용하면 고차함수에 들어갈 함수형 인자를 쉽게 표현 가능
